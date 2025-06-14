@@ -10,6 +10,7 @@ import (
 	"github.com/gitferry/bamboo/log"
 	"github.com/gitferry/bamboo/message"
 	"github.com/gitferry/bamboo/socket"
+	"github.com/gitferry/bamboo/crypto"
 )
 
 // Node is the primary access point for every replica
