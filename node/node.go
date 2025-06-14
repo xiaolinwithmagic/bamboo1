@@ -22,6 +22,7 @@ type Node interface {
 	Retry(r message.Transaction)
 	Forward(id identity.NodeID, r message.Transaction)
 	Register(m interface{}, f interface{})
+	PrivateKey() crypto.PrivateKey 
 	IsByz() bool
 }
 
@@ -37,13 +38,14 @@ type node struct {
 	server      *http.Server
 	isByz       bool
 	totalTxn    int
+	privateKey mycrypto.PrivateKey
 
 	sync.RWMutex
 	forwards map[string]*message.Transaction
 }
 
 // NewNode creates a new Node object from configuration
-func NewNode(id identity.NodeID, isByz bool) Node {
+func NewNode(id identity.NodeID, isByz bool,privateKey mycrypto.PrivateKey) Node {
 	return &node{
 		id:     id,
 		isByz:  isByz,
@@ -53,6 +55,7 @@ func NewNode(id identity.NodeID, isByz bool) Node {
 		TxChan:      make(chan interface{}, config.Configuration.ChanBufferSize),
 		handles:     make(map[string]reflect.Value),
 		forwards:    make(map[string]*message.Transaction),
+		privateKey: privateKey,
 	}
 }
 
@@ -67,6 +70,10 @@ func (n *node) IsByz() bool {
 func (n *node) Retry(r message.Transaction) {
 	log.Debugf("node %v retry reqeust %v", n.id, r)
 	n.MessageChan <- r
+}
+
+func (n *node) PrivateKey() crypto.PrivateKey {
+	return n.privateKey
 }
 
 // Register a handle function for each message type
