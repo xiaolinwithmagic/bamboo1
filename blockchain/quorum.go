@@ -16,6 +16,13 @@ type Vote struct {
 	crypto.Signature
 }
 
+type PartialQC struct {
+    BlockID  types.Identifier
+    View     types.View
+    Signers  []types.Identifier
+    Sig      []byte
+}
+
 type QC struct {
 	Leader  identity.NodeID
 	View    types.View
